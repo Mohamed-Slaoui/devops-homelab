@@ -1,10 +1,10 @@
 # DevOps Homelab
 
-A hands-on DevOps learning project where I build and manage a complete infrastructure from scratch using VirtualBox and Ubuntu Server.
+A hands-on DevOps learning project where I build and manage a complete virtual infrastructure from scratch using VirtualBox and Ubuntu Server.
 
-The goal of this project is to understand how modern infrastructure is built, automated, and maintained by learning through practical implementation instead of relying on cloud services.
+The goal of this project is to understand how modern infrastructure is built, automated, and maintained through practical implementation rather than relying entirely on managed cloud services.
 
-This repository will gradually evolve into a complete Infrastructure as Code (IaC) project covering server provisioning, configuration management, monitoring, containerization, and automation.
+The project is gradually evolving into an Infrastructure as Code (IaC) environment covering infrastructure provisioning, configuration management, application deployment, CI/CD, monitoring, containerization, and automation.
 
 ---
 
@@ -14,43 +14,78 @@ This repository will gradually evolve into a complete Infrastructure as Code (Ia
 - Create a reproducible virtual infrastructure
 - Learn Linux system administration
 - Configure networking and SSH
-- Automate infrastructure using Ansible
-- Provision infrastructure using Terraform
+- Automate server configuration using Ansible
 - Learn Infrastructure as Code (IaC)
+- Provision infrastructure using Terraform
 - Deploy applications using Docker
-- Explore CI/CD and DevOps best practices
+- Build CI/CD pipelines
+- Implement monitoring and observability
+- Explore Kubernetes
 
 ---
 
 ## Current Infrastructure
 
-| Hostname | Role | IP Address |
-|----------|------|------------|
+| Hostname        | Role            | IP Address    |
+|-----------------|-----------------|---------------|
 | ansible-control | Automation Node | 192.168.56.10 |
-| web01 | Web Server | 192.168.56.11 |
-| web02 | Web Server | 192.168.56.12 |
-| db01 | Database Server | 192.168.56.13 |
+| web01           | Web Server      | 192.168.56.11 |
+| web02           | Web Server      | 192.168.56.12 |
+| db01            | Database Server  | 192.168.56.13 |
+
+All virtual machines run Ubuntu Server and communicate through a private VirtualBox network.
 
 ---
 
 ## Current Progress
 
-### Infrastructure
+### Virtual Infrastructure
 
 - ✅ Ubuntu Server 24.04.4 LTS Golden Image
 - ✅ Automated bootstrap process
 - ✅ Golden Image cleanup process
-- ✅ First boot initialization
+- ✅ First-boot initialization
 - ✅ Virtual machine cloning
-- ✅ Unique Machine IDs
+- ✅ Unique machine IDs
 - ✅ Unique SSH host keys
 - ✅ Hostname configuration
 - ✅ Static IP configuration using Netplan
 - ✅ Passwordless SSH authentication
+- ✅ Dedicated Ansible control node
+- ✅ Web server group
+- ✅ Database server group
+
+### Ansible
+
+- ✅ Ansible installed and configured
+- ✅ Inventory configuration
+- ✅ SSH-based Ansible communication
+- ✅ Ansible ad-hoc commands
+- ✅ Ansible facts
+- ✅ Package management with Ansible
+- ✅ Ansible playbooks
+- ✅ Idempotent configuration
+- ✅ Nginx deployment
+- ✅ Jinja2 templates
+- ✅ Ansible handlers
+- ✅ Ansible roles
+- ✅ Nginx role
+- ✅ Custom dynamic web pages generated from server facts
+
+### CI/CD
+
+- ✅ GitHub repository
+- ✅ Git-based infrastructure management
+- ✅ GitHub Actions self-hosted runner
+- ✅ Automatic repository synchronization on push to `main`
+- ⏳ Runner persistence/reliability improvements
 
 ### Documentation
 
 - ✅ Golden Image documentation
+- ⏳ Ansible documentation
+- ⏳ Infrastructure architecture documentation
+- ⏳ CI/CD documentation
 
 ---
 
@@ -62,10 +97,24 @@ devops-homelab/
 ├── ansible/
 │   ├── ansible.cfg
 │   ├── inventory/
-│   └── playbooks/
+│   │   └── hosts.ini
+│   │
+│   ├── playbooks/
+│   │   ├── deploy-nginx.yml
+│   │   └── install-tools.yml
+│   │
+│   └── roles/
+│       └── nginx/
+│           ├── handlers/
+│           │   └── main.yml
+│           ├── tasks/
+│           │   └── main.yml
+│           └── templates/
+│               └── index.html.j2
 │
 ├── docs/
-│   └── golden-image.md
+│   ├── golden-image.md
+│   └── ansible.md
 │
 ├── scripts/
 │   ├── bootstrap.sh
@@ -74,43 +123,3 @@ devops-homelab/
 │
 ├── README.md
 └── .gitignore
-```
-
----
-
-## Technologies Used
-
-- Ubuntu Server 24.04 LTS
-- VirtualBox
-- Linux
-- OpenSSH
-- Git
-
-> More technologies will be added as the project evolves.
-
----
-
-## Roadmap
-
-- [x] Build Ubuntu Golden Image
-- [x] Configure networking
-- [x] Configure SSH
-- [ ] Configure Ansible
-- [ ] Create Ansible Playbooks
-- [ ] Learn Ansible Roles
-- [ ] Provision infrastructure with Terraform
-- [ ] Deploy applications with Docker
-- [ ] Configure Reverse Proxy (Nginx)
-- [ ] Build CI/CD Pipeline
-- [ ] Monitoring with Prometheus & Grafana
-- [ ] Explore Kubernetes
-
----
-
-## Purpose
-
-This repository documents my journey of learning DevOps by designing, building, documenting, and automating a complete virtual infrastructure from the ground up.
-
-Every configuration, script, and automation is written with the goal of understanding **why** it exists, not just **how** to use it.
-
-As the project grows, this repository will serve both as a personal learning journal and as a portfolio demonstrating practical DevOps skills.
