@@ -3,13 +3,18 @@
   become: true
 
   tasks:
-    - name: Install tree
+    - name: Install multiple packages using apt
       apt:
-        name: tree
+        name: 
+          - tree
+          - htop
+          - curl
+          - git
         state: present
         update_cache: yes
 
-    - name: Install htop
-      apt:
-        name: htop
-        state: present
+    #  second approach to install htop
+    # - name: Install htop
+    #   apt:
+    #     name: htop
+    #     state: present
