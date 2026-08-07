@@ -1,4 +1,4 @@
-name: Sync Ansible Server With GitHub Repository
+name: Sync Ansible Repository
 
 on:
   push:
@@ -7,16 +7,26 @@ on:
 
 jobs:
   sync:
+    name: Sync Repository
     runs-on: self-hosted
 
     steps:
-      - name: Show runner information
+      - name: Sync devops-homelab
         run: |
-          echo "Running on:"
-          hostname
-          pwd
+          set -e
 
-      - name: Pull latest changes
-        run: |
           cd /home/ubuntu/devops-homelab
-          git pull origin main
+
+          echo "========== BEFORE =========="
+          echo "Host: $(hostname)"
+          echo "Directory: $(pwd)"
+          echo "Current Commit: $(git rev-parse --short HEAD)"
+          echo
+
+          git fetch origin
+          git reset --hard origin/main
+
+          echo
+          echo "========== AFTER =========="
+          echo "Current Commit: $(git rev-parse --short HEAD)"
+          echo "Repository synchronized successfully."
