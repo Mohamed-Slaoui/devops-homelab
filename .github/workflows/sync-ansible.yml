@@ -1,4 +1,4 @@
-name: Sync Ansible Repository
+name: Sync Ansible Server With GitHub Repository
 
 on:
   push:
