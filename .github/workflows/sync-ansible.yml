@@ -1,32 +1,32 @@
-name: Sync Ansible Repository
+# name: Sync Ansible Repository
 
-on:
-  push:
-    branches:
-      - main
+# on:
+#   push:
+#     branches:
+#       - main
 
-jobs:
-  sync:
-    name: Sync Repository
-    runs-on: self-hosted
+# jobs:
+#   sync:
+#     name: Sync Repository
+#     runs-on: self-hosted
 
-    steps:
-      - name: Sync devops-homelab
-        run: |
-          set -e
+#     steps:
+#       - name: Sync devops-homelab
+#         run: |
+#           set -e
 
-          cd /home/ubuntu/devops-homelab
+#           cd /home/ubuntu/devops-homelab
 
-          echo "========== BEFORE =========="
-          echo "Host: $(hostname)"
-          echo "Directory: $(pwd)"
-          echo "Current Commit: $(git rev-parse --short HEAD)"
-          echo
+#           echo "========== BEFORE =========="
+#           echo "Host: $(hostname)"
+#           echo "Directory: $(pwd)"
+#           echo "Current Commit: $(git rev-parse --short HEAD)"
+#           echo
 
-          git fetch origin
-          git reset --hard origin/main
+#           git fetch origin
+#           git reset --hard origin/main
 
-          echo
-          echo "========== AFTER =========="
-          echo "Current Commit: $(git rev-parse --short HEAD)"
-          echo "Repository synchronized successfully."
+#           echo
+#           echo "========== AFTER =========="
+#           echo "Current Commit: $(git rev-parse --short HEAD)"
+#           echo "Repository synchronized successfully."
