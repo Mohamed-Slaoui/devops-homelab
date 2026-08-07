@@ -36,14 +36,15 @@
 <body>
 
 <div class="card">
-    <h1>Welcome to {{ ansible_hostname }}</h1>
+    <h1>{{ server_message }}</h1>
 
-    <p>Managed by Ansible</p>
+    <h2>{{ ansible_hostname }}</h2>
 
-    <p>IP: {{ ansible_default_ipv4.address }}</p>
+    <p>Environment: {{ server_environment }}</p>
 
-    <p>Operating System: {{ ansible_distribution }}
-       {{ ansible_distribution_version }}</p>
+    <p>IP Address: {{ ansible_default_ipv4.address }}</p>
+
+    <p>OS: {{ ansible_distribution }} {{ ansible_distribution_version }}</p>
 </div>
 
 </body>
