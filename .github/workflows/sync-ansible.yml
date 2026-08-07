@@ -1,0 +1,22 @@
+name: Sync Ansible Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: self-hosted
+
+    steps:
+      - name: Show runner information
+        run: |
+          echo "Running on:"
+          hostname
+          pwd
+
+      - name: Pull latest changes
+        run: |
+          cd /home/ubuntu/devops-homelab
+          git pull origin main
