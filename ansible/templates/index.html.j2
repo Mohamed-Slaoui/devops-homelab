@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ ansible_hostname }}</title>
+
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            background:#1f2937;
+            color:white;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            margin:0;
+        }
+
+        .card{
+            text-align:center;
+            padding:40px;
+            border-radius:12px;
+            background:#374151;
+            box-shadow:0 0 20px rgba(0,0,0,.3);
+        }
+
+        h1{
+            color:#4ade80;
+        }
+
+        p{
+            color:#d1d5db;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h1>Welcome to {{ ansible_hostname }}</h1>
+
+    <p>Managed by Ansible 🚀</p>
+
+    <p>IP: {{ ansible_default_ipv4.address }}</p>
+
+    <p>Operating System: {{ ansible_distribution }}
+       {{ ansible_distribution_version }}</p>
+</div>
+
+</body>
+</html>
