@@ -1,0 +1,15 @@
+- name: Install useful tools on all servers
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install tree
+      apt:
+        name: tree
+        state: present
+        update_cache: yes
+
+    - name: Install htop
+      apt:
+        name: htop
+        state: present
