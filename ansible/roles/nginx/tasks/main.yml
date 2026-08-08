@@ -31,3 +31,11 @@
   notify: Restart nginx
   tags:
     - config
+
+
+- name: Deploy database configuration
+  template:
+    src: database.conf.j2
+    dest: /tmp/database.conf
+  tags:
+    - config
