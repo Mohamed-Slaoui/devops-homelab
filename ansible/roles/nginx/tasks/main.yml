@@ -5,21 +5,29 @@
     state: present
     update_cache: true
   when: ansible_distribution == 'Ubuntu'
+  tags:
+    - packages
 
 - name: Install extra packages
   apt:
     name: "{{ item }}"
     state: present
   loop: "{{ extra_packages }}"
+  tags: 
+    - packages
 
 - name: Ensure nginx is running
   service:
     name: nginx
     state: started
     enabled: true
+  tags: 
+    - services
 
 - name: Deploy custom homepage
   template:
     src: index.html.j2
     dest: /var/www/html/index.html
   notify: Restart nginx
+  tags:
+    - config
