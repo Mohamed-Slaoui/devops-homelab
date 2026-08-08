@@ -1,4 +1,8 @@
 ---
+- name: Debug server message inside nginx role
+  debug:
+    var: server_message
+
 - name: Install nginx
   apt:
     name: nginx
