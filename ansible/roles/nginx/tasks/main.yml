@@ -4,6 +4,13 @@
     name: nginx
     state: present
     update_cache: true
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install extra packages
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ extra_packages }}"
 
 - name: Ensure nginx is running
   service:

@@ -1,3 +1,5 @@
 ---
 server_environment: staging
 server_message: "Welcome to the Staging Environment"
+extra_packages:
+  - curl
