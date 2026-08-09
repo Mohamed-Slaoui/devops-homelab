@@ -1,4 +1,8 @@
 ---
 server_environment: production
 server_message: "Welcome to the Production Environment"
-extra_packages: []
+extra_packages: 
+  - htop
+  - git
+  - curl
+  - tree

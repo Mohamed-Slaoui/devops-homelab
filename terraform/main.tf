@@ -14,4 +14,6 @@ resource "multipass_instance" "web03" {
   cpus   = 2
   memory = "2GiB"
   image  = "jammy"
+
+  cloudinit_file = "${path.module}/cloud-init.yaml"
 }
