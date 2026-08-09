@@ -9,9 +9,9 @@ terraform {
 
 provider "multipass" {}
 
-resource "multipass_instance" "test_node" {
-  name   = "terraform-test"
-  cpus   = 1
-  memory = "1GiB"
+resource "multipass_instance" "web03" {
+  name   = "web03"
+  cpus   = 2
+  memory = "2GiB"
   image  = "jammy"
 }
