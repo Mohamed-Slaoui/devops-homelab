@@ -17,3 +17,8 @@ resource "multipass_instance" "web03" {
 
   cloudinit_file = "${path.module}/cloud-init.yaml"
 }
+
+output "web03_ip" {
+  description = "IP address of the production web03 server"
+  value       = multipass_instance.web03.ipv4
+}
