@@ -32,3 +32,6 @@ override.tf.json
 # Sensitive Terraform files
 .terraformrc
 terraform.rc
+
+# Terraform downloaded/local VM images
+*.box

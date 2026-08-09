@@ -1,10 +1,17 @@
 terraform {
   required_providers {
-    virtualbox = {
-      source  = "terra-farm/virtualbox"
-      version = "0.2.2-alpha.1"
+    multipass = {
+      source  = "larstobi/multipass"
+      version = "1.4.3"
     }
   }
 }
 
-provider "virtualbox" {}
+provider "multipass" {}
+
+resource "multipass_instance" "test_node" {
+  name   = "terraform-test"
+  cpus   = 1
+  memory = "1GiB"
+  image  = "jammy"
+}
