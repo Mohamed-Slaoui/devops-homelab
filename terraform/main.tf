@@ -6,8 +6,8 @@ terraform {
     }
 
     local = {
-      source = "hashicorp/local"
-    }
+      source  = "hashicorp/local"
+      }
   }
 }
 
