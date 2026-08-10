@@ -1,40 +1,77 @@
 terraform {
   required_providers {
-    multipass = {
-      source  = "larstobi/multipass"
-      version = "1.4.3"
+    local = {
+      source = "hashicorp/local"
     }
 
-    local = {
-      source  = "hashicorp/local"
-      }
+    null = {
+      source = "hashicorp/null"
+    }
   }
 }
 
-provider "multipass" {}
 provider "local" {}
+provider "null" {}
 
-resource "multipass_instance" "web03" {
-  name   = "web03"
-  cpus   = 2
-  memory = "2GiB"
-  image  = "jammy"
+locals {
+  server_hostname = "web03"
+  server_ip       = "192.168.56.14"
+  server_user     = "vagrant"
+  server_group    = "production"
 
-  cloudinit_file = "${path.module}/cloud-init.yaml"
+  vagrant_dir = "${path.module}/../vagrant"
 }
 
-resource "local_file" "ansible_web03_inventory" {
-  filename = "${path.module}/../ansible/inventory/web03.ini"
+# Create the Vagrant VM
+resource "null_resource" "create_server" {
+  triggers = {
+    hostname = local.server_hostname
+    ip       = local.server_ip
+  }
 
-  content = templatefile(
-    "${path.module}/ansible-web03.tftpl",
-    {
-      web03_ip = multipass_instance.web03.ipv4
+  provisioner "local-exec" {
+    working_dir = local.vagrant_dir
+
+    command = "vagrant up"
+
+    environment = {
+      VM_HOSTNAME = local.server_hostname
+      VM_IP       = local.server_ip
     }
-  )
+  }
+
+  provisioner "local-exec" {
+    when        = destroy
+    command     = "vagrant destroy -f"
+    working_dir = "${path.module}/../vagrant"
+  }
 }
 
-output "web03_ip" {
-  description = "IP address of the production web03 server"
-  value       = multipass_instance.web03.ipv4
+# Automatically update Ansible inventory
+resource "null_resource" "update_ansible_inventory" {
+  depends_on = [null_resource.create_server]
+
+  triggers = {
+    hostname = local.server_hostname
+    ip       = local.server_ip
+    user     = local.server_user
+    group    = local.server_group
+  }
+
+  # Add server to inventory
+  provisioner "local-exec" {
+    command = "python ${path.module}/update_inventory.py --inventory ${path.module}/../ansible/inventory/hosts.ini --group ${local.server_group} --hostname ${local.server_hostname} --ip ${local.server_ip} --user ${local.server_user}"
+  }
+
+  # Remove server from inventory when destroyed
+  provisioner "local-exec" {
+    when = destroy
+
+    command = "python ${path.module}/remove_inventory.py --inventory ${path.module}/../ansible/inventory/hosts.ini --hostname ${self.triggers.hostname}"
+  }
+}
+
+output "server_ip" {
+  description = "IP address of the server"
+  value       = local.server_ip
 }
