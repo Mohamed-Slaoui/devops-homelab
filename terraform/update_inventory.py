@@ -1,78 +1,138 @@
+#!/usr/bin/env python3
+
 import argparse
+import re
 from pathlib import Path
 
-parser = argparse.ArgumentParser()
 
-parser.add_argument("--inventory", required=True)
-parser.add_argument("--group", required=True)
-parser.add_argument("--hostname", required=True)
-parser.add_argument("--ip", required=True)
-parser.add_argument("--user", required=True)
+def remove_host(lines, hostname, ip):
+    """
+    Remove existing inventory entries matching either:
+      - hostname
+      - ansible_host=IP
+    """
 
-args = parser.parse_args()
+    result = []
 
-inventory_path = Path(args.inventory)
+    for line in lines:
+        stripped = line.strip()
 
-content = inventory_path.read_text()
+        # Keep comments and blank lines
+        if not stripped or stripped.startswith("#"):
+            result.append(line)
+            continue
 
-new_host = (
-    f"{args.hostname} "
-    f"ansible_host={args.ip} "
-    f"ansible_user={args.user}"
-)
+        # Only inspect actual inventory host lines
+        if (
+            re.search(rf"^{re.escape(hostname)}(?:\s|$)", stripped)
+            or re.search(rf"\bansible_host={re.escape(ip)}(?:\s|$)", stripped)
+        ):
+            continue
 
-lines = content.splitlines()
+        result.append(line)
 
-# Remove existing entry for this hostname
-lines = [
-    line for line in lines
-    if not line.startswith(f"{args.hostname} ")
-]
+    return result
 
-# Find the requested group
-group_header = f"[{args.group}]"
 
-for i, line in enumerate(lines):
-    if line.strip() == group_header:
+def ensure_group(lines, group):
+    """
+    Make sure [group] exists.
+    Returns:
+        updated lines
+        index of the group header
+    """
 
-        insert_at = i + 1
+    header = f"[{group}]"
 
-        # Find the first blank line or next group
-        while insert_at < len(lines):
-            if lines[insert_at].strip() == "":
-                break
+    for i, line in enumerate(lines):
+        if line.strip() == header:
+            return lines, i
 
-            if lines[insert_at].startswith("["):
-                break
+    # Group doesn't exist → create it at the end
+    if lines and lines[-1].strip():
+        lines.append("\n")
 
-            insert_at += 1
+    lines.append(f"{header}\n")
 
-        # Insert directly before the blank line
-        lines.insert(insert_at, new_host)
+    return lines, len(lines) - 1
 
-        break
 
-else:
-    raise SystemExit(
-        f"ERROR: Inventory group '{args.group}' was not found."
+def add_host(lines, group, hostname, ip, user):
+    """
+    Add host underneath the specified group.
+    """
+
+    lines, group_index = ensure_group(lines, group)
+
+    host_line = f"{hostname} ansible_host={ip}"
+
+    if user:
+        host_line += f" ansible_user={user}"
+
+    host_line += "\n"
+
+    # Find the end of the group
+    insert_at = group_index + 1
+
+    while insert_at < len(lines):
+        stripped = lines[insert_at].strip()
+
+        if stripped.startswith("["):
+            break
+
+        insert_at += 1
+
+    # Remove trailing blank lines from the group area
+    while insert_at > group_index + 1 and not lines[insert_at - 1].strip():
+        insert_at -= 1
+
+    lines.insert(insert_at, host_line)
+
+    return lines
+
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument("--inventory", required=True)
+    parser.add_argument("--group", required=True)
+    parser.add_argument("--hostname", required=True)
+    parser.add_argument("--ip", required=True)
+    parser.add_argument("--user", default="")
+
+    args = parser.parse_args()
+
+    inventory = Path(args.inventory)
+
+    if inventory.exists():
+        lines = inventory.read_text().splitlines(keepends=True)
+    else:
+        lines = []
+
+    # 1. Remove old hostname/IP entry
+    lines = remove_host(
+        lines,
+        args.hostname,
+        args.ip,
     )
 
-# Clean up excessive blank lines
-cleaned_lines = []
+    # 2. Create group if necessary
+    # 3. Add the new host
+    lines = add_host(
+        lines,
+        args.group,
+        args.hostname,
+        args.ip,
+        args.user,
+    )
 
-for line in lines:
-    if line.strip() == "" and (
-        not cleaned_lines or cleaned_lines[-1].strip() == ""
-    ):
-        continue
+    inventory.write_text("".join(lines))
 
-    cleaned_lines.append(line)
+    print(
+        f"Inventory updated: "
+        f"{args.hostname} -> {args.ip} [{args.group}]"
+    )
 
-inventory_path.write_text(
-    "\n".join(cleaned_lines) + "\n"
-)
 
-print(
-    f"Updated {inventory_path}: "
-    f"{args.hostname} -> [{args.group}]"
-)
+if __name__ == "__main__":
+    main()

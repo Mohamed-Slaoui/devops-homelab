@@ -35,5 +35,9 @@ terraform.rc
 
 # Terraform downloaded/local VM images
 *.box
+*.vdi
+*.ova
 
 .vagrant/
+
+machines.json

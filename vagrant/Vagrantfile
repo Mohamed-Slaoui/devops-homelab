@@ -1,26 +1,32 @@
+require 'json'
+
+machines_file = File.join(File.dirname(__FILE__), "machines.json")
+machines = JSON.parse(File.read(machines_file))
+
+ansible_pubkey_path = File.join(File.dirname(__FILE__), "..", "ansible", "wsl-ansible.pub")
+ansible_pubkey = File.read(ansible_pubkey_path).strip
+
 Vagrant.configure("2") do |config|
+  machines.each do |name, cfg|
+    config.vm.define name do |node|
+      node.vm.box      = cfg["box"]
+      node.vm.hostname = name
 
-  config.vm.box = "ubuntu/jammy64"
+      node.vm.network "private_network", ip: cfg["ip"]
 
-  config.vm.hostname = ENV.fetch("VM_HOSTNAME", "web03")
+      node.vm.provider "virtualbox" do |vb|
+        vb.name   = name
+        vb.memory = cfg["memory"]
+        vb.cpus   = cfg["cpus"]
+      end
 
-  config.vm.network "private_network",
-    ip: ENV.fetch("VM_IP", "192.168.56.14")
-
-  config.vm.provider "virtualbox" do |vb|
-    vb.name = ENV.fetch("VM_HOSTNAME", "web03").capitalize
-    vb.memory = 2048
-    vb.cpus = 2
+      node.vm.provision "shell", inline: <<-SHELL
+        mkdir -p /home/vagrant/.ssh
+        echo "#{ansible_pubkey}" >> /home/vagrant/.ssh/authorized_keys
+        chown -R vagrant:vagrant /home/vagrant/.ssh
+        chmod 700 /home/vagrant/.ssh
+        chmod 600 /home/vagrant/.ssh/authorized_keys
+      SHELL
+    end
   end
-
-  config.vm.provision "shell",
-    inline: <<-SHELL
-      mkdir -p /home/vagrant/.ssh
-      cat /vagrant/ansible-control.pub >> /home/vagrant/.ssh/authorized_keys
-
-      chown -R vagrant:vagrant /home/vagrant/.ssh
-      chmod 700 /home/vagrant/.ssh
-      chmod 600 /home/vagrant/.ssh/authorized_keys
-    SHELL
-
 end

@@ -1,39 +1,42 @@
+#!/usr/bin/env python3
+
 import argparse
+import re
 from pathlib import Path
 
-parser = argparse.ArgumentParser()
 
-parser.add_argument("--inventory", required=True)
-parser.add_argument("--hostname", required=True)
+def main():
+    parser = argparse.ArgumentParser()
 
-args = parser.parse_args()
+    parser.add_argument("--inventory", required=True)
+    parser.add_argument("--hostname", required=True)
 
-inventory_path = Path(args.inventory)
+    args = parser.parse_args()
 
-content = inventory_path.read_text()
+    inventory = Path(args.inventory)
 
-lines = content.splitlines()
+    if not inventory.exists():
+        print("Inventory does not exist. Nothing to remove.")
+        return
 
-# Remove the host entry
-lines = [
-    line
-    for line in lines
-    if not line.startswith(f"{args.hostname} ")
-]
+    lines = inventory.read_text().splitlines(keepends=True)
 
-# Remove excessive blank lines
-cleaned_lines = []
+    result = []
 
-for line in lines:
-    if line.strip() == "" and (
-        not cleaned_lines or cleaned_lines[-1].strip() == ""
-    ):
-        continue
+    pattern = re.compile(
+        rf"^{re.escape(args.hostname)}(?:\s|$)"
+    )
 
-    cleaned_lines.append(line)
+    for line in lines:
+        if pattern.match(line.strip()):
+            continue
 
-inventory_path.write_text("\n".join(cleaned_lines) + "\n")
+        result.append(line)
 
-print(
-    f"Removed {args.hostname} from {inventory_path}"
-)
+    inventory.write_text("".join(result))
+
+    print(f"Removed {args.hostname} from inventory.")
+
+
+if __name__ == "__main__":
+    main()
