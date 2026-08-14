@@ -1,0 +1,43 @@
+---
+- name: Install MariaDB
+  ansible.builtin.apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+    state: present
+    update_cache: true
+
+- name: Install Python MariaDB driver
+  ansible.builtin.apt:
+    name: python3-pymysql
+    state: present
+
+- name: Ensure MariaDB is running
+  ansible.builtin.service:
+    name: mariadb
+    state: started
+    enabled: true
+
+- name: Create application database
+  ansible.mysql.mysql_db:
+    name: "{{ database_name }}"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Create application database user
+  ansible.mysql.mysql_user:
+    name: "{{ database_user }}"
+    password: "{{ database_password }}"
+    host: "%"
+    priv: "{{ database_name }}.*:ALL"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+
+- name: Configure MariaDB to listen on all interfaces
+  ansible.builtin.template:
+    src: 50-server.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart MariaDB

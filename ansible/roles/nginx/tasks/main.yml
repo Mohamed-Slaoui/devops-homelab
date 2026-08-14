@@ -9,12 +9,15 @@
     - packages
 
 - name: Install extra packages
-  apt:
-    name: "{{ item }}"
+  ansible.builtin.apt:
+    name:
+      - htop
+      - curl
+      - git
+      - tree
+      - mariadb-client
     state: present
-  loop: "{{ extra_packages }}"
-  tags: 
-    - packages
+    update_cache: true
 
 - name: Ensure nginx is running
   service:
