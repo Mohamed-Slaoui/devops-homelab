@@ -4,7 +4,7 @@
     name: nginx
     state: present
     update_cache: true
-  when: ansible_distribution == 'Ubuntu'
+  when: ansible_facts["distribution"] == "Ubuntu"
   tags:
     - packages
 

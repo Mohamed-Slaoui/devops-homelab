@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ ansible_hostname }}</title>
+    <title>{{ ansible_facts['hostname'] }}</title>
 
     <style>
         body {
@@ -37,18 +37,18 @@
     <div class="card">
         <h1>DevOps Homelab</h1>
 
-        <h2>{{ ansible_hostname }}</h2>
+        <h2>{{ ansible_facts["hostname"] }}</h2>
 
         <p>{{ server_message }}</p>
 
         <p>Environment: {{ server_environment }}</p>
 
-        <p>IP Address: {{ ansible_default_ipv4.address }}</p>
+        <p>IP Address: {{ ansible_facts['default_ipv4']['address'] }}</p>
 
         <p>
             OS:
-            {{ ansible_distribution }}
-            {{ ansible_distribution_version }}
+            {{ ansible_facts['distribution'] }}
+            {{ ansible_facts['distribution_version'] }}
         </p>
     </div>
 </body>
