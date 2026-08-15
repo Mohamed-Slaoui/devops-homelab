@@ -1,0 +1,15 @@
+[Unit]
+Description=Homelab Dashboard
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/homelab-dashboard
+ExecStart=/usr/bin/node /opt/homelab-dashboard/src/server.js
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+Environment=PORT=3000
+
+[Install]
+WantedBy=multi-user.target

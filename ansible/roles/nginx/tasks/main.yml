@@ -20,7 +20,7 @@
     update_cache: true
 
 - name: Ensure nginx is running
-  service:
+  ansible.builtin.systemd:
     name: nginx
     state: started
     enabled: true
@@ -42,3 +42,32 @@
     dest: /tmp/database.conf
   tags:
     - config
+
+- name: Disable default nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  become: true
+  notify:
+    - Restart nginx
+
+- name: Deploy dashboard reverse proxy
+  ansible.builtin.template:
+    src: dashboard.conf.j2
+    dest: /etc/nginx/sites-available/dashboard
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - Restart nginx
+
+
+- name: Enable dashboard reverse proxy
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/dashboard
+    dest: /etc/nginx/sites-enabled/dashboard
+    state: link
+  become: true
+  notify:
+    - Restart nginx

@@ -1,0 +1,7 @@
+---
+- name: Deploy Homelab Dashboard
+  hosts: web01
+  become: true
+
+  roles:
+    - dashboard

@@ -1,0 +1,8 @@
+---
+- name: Restart dashboard
+  ansible.builtin.systemd:
+    name: homelab-dashboard
+    state: restarted
+    enabled: true
+    daemon_reload: true
+  become: true

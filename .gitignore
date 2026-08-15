@@ -41,3 +41,5 @@ terraform.rc
 .vagrant/
 
 machines.json
+
+node_modules/

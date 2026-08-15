@@ -1,0 +1,12 @@
+{
+  "name": "homelab-dashboard",
+  "version": "1.0.0",
+  "description": "Homelab Dashboard",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}

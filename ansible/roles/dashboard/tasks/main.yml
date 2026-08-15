@@ -1,0 +1,53 @@
+---
+- name: Install Node.js and npm
+  ansible.builtin.apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+    update_cache: true
+  become: true
+
+- name: Create application directory
+  ansible.builtin.file:
+    path: /opt/homelab-dashboard
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Copy application package.json
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../app/package.json"
+    dest: /opt/homelab-dashboard/package.json
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: Copy application source
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../app/src/"
+    dest: /opt/homelab-dashboard/src/
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+
+- name: Install application dependencies
+  ansible.builtin.command:
+    cmd: npm install
+    chdir: /opt/homelab-dashboard
+  become: true
+
+- name: Install dashboard systemd service
+  ansible.builtin.template:
+    src: dashboard.service.j2
+    dest: /etc/systemd/system/homelab-dashboard.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - Restart dashboard
